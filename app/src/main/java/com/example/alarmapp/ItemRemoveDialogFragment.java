@@ -51,8 +51,12 @@ public class ItemRemoveDialogFragment extends DialogFragment {
         return view;
     }
 
-public boolean getReply(){
+    public boolean getReply(){
         return reply;
-}
+    }
+
+    public void setReply(boolean reply){
+        this.reply = reply;
+    }
 
 }

@@ -1,5 +1,7 @@
 package com.example.alarmapp;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import static com.example.alarmapp.DbOpenHelper.TIME;
 
@@ -103,11 +106,16 @@ public class AlarmFragment extends Fragment {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         if(itemRemoveDialogFragment.getReply() == true){
+                            Log.d("시간", listViewAdapter.getRawTime(position) + "");
+                            Log.d("시간2", dbOpenHelper.getTime(listViewAdapter.getRawTime(position)) + "");
+
                             listViewAdapter.removeData(position);
                             if(dbOpenHelper.getIdFromTime(listViewAdapter.getRawTime(position)) != -1){
                                 dbOpenHelper.deleteColumn(dbOpenHelper.getIdFromTime(listViewAdapter.getRawTime(position)));
                             }
+                            deleteAlarm(listViewAdapter.getRawTime(position));
                         }
+                        itemRemoveDialogFragment.setReply(false);
                     }
                 });
             }
@@ -148,9 +156,14 @@ public class AlarmFragment extends Fragment {
         time[1] = minute;
 
         int rawTime = hour * 100 + minute;
-        dbOpenHelper.insertColumn(rawTime);
-        listViewAdapter.addItem(time);
-        listViewAdapter.notifyDataSetChanged();
+
+        if(dbOpenHelper.getIdFromTime(rawTime) == -1){
+            dbOpenHelper.insertColumn(rawTime);
+            listViewAdapter.addItem(time);
+            listViewAdapter.notifyDataSetChanged();
+        }else{
+            Toast.makeText(getActivity(), "이미 있음", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void setListOnCreate(DbOpenHelper dbOpenHelper){
@@ -169,5 +182,13 @@ public class AlarmFragment extends Fragment {
         }catch (NullPointerException e){
             e.printStackTrace();
         }
+    }
+
+    public void deleteAlarm(int rawTime){
+        Intent intent = new Intent();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), rawTime, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        Log.d("akdjf", "알람 제거됨");
     }
 }

@@ -90,4 +90,15 @@ public class DbOpenHelper implements BaseColumns {
         }
         return -1;
     }
+
+    public int getTime(int time){
+        Cursor cursor = this.selectColumns();
+        while(cursor.moveToNext()){
+            int rawTime = cursor.getInt(cursor.getColumnIndex(TIME));
+            if(rawTime == time){
+                return rawTime;
+            }
+        }
+        return -1;
+    }
 }

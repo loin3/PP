@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,17 +22,16 @@ import java.util.Calendar;
 
 public class TimeSettingActivity extends AppCompatActivity {
 
-    AlarmManager alarmManager;
-    TimePicker timePicker;
+    private TimePicker timePicker;
+    private  AlarmManager alarmManager;
+    private final Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_setting);
 
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         timePicker = findViewById(R.id.time_picker);
-        final Calendar calendar = Calendar.getInstance();
 
 
         final Button alarmOn = findViewById(R.id.button_start);
@@ -46,6 +48,7 @@ public class TimeSettingActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.putExtra("time hour", hour);
                 intent.putExtra("time minute", minute);
+                intent.putExtra("millitime", calendar.getTimeInMillis());
                 setResult(0, intent);
 
                 finish();
@@ -61,4 +64,5 @@ public class TimeSettingActivity extends AppCompatActivity {
             }
         });
     }
+
 }
